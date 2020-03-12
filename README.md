@@ -1,4 +1,4 @@
-# Manage-Database-Auto-Provisioning
+# Manage Database Auto Provisioning
 
 PowerShell Script to automatically exclude/include Exchange Server Mailbox Databases based on the available disk space and the database whitespace from the mailbox provisioning load balancer that distributes new mailboxes randomly and evenly across the available databases, based on the available disk space and database whitespace.
 
@@ -38,7 +38,9 @@ Param | Type | Mandatory | Description
 ### Examples
 
 Use this command to manage the suspension for all databases except DB1 and DB2 that have less than 20 percent total storage space:
+
 `.\ManageDatabaseAutoProvisioning.ps1 -Treshold 20 -ExcludedDatabases 'DB1', 'DB2'`
 
 Use this command to manage the suspension for all databases that have less than 20 percent total storage space. Afterwards send a report to two recipients:
+
 `.\ManageDatabaseAutoProvisioning.ps1 -Treshold 20 -SendReport -ReportPath 'C:\Temp\' -ReportRecipients 'julian@example.com', 'exchangeadmins@example.com' -ReportSender -suspensionreport@example.com -SmtpServer 'mail.example.com'`
