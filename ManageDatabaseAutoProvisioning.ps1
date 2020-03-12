@@ -1,42 +1,59 @@
-﻿[CmdletBinding(DefaultParametersetName='None')]
+﻿#Requires -Version 4.0
+
+<#  
+.SYNOPSIS
+    Exclude/include mailbox databases from Exchange Server Database auto provisioning.
+
+.DESCRIPTION
+    Script to automatically exclude/include Exchange Server Mailbox Databases based on the
+    available disk space and the database whitespace from the mailbox provisioning load balancer
+    that distributes new mailboxes randomly and evenly across the available databases,
+    based on the available disk space and database whitespace.
+
+.NOTES
+    Author     : Julian Wendt
+    Version    : 1.0.0
+#>
+
+[CmdletBinding(DefaultParametersetName='None')]
 param (
-    # Treshold in percent for the total free space
+    # Threshold value in percent, when a database is excluded or resumed
     [Parameter(Mandatory)]
     [int]$Treshold,
 
-    # List of databases to exclude from management
+    # List of databases that should not be processed by the script
     [array]$ExcludedDatabases,
-
-    # Send a report by mail
+    
+    # Send a report by mail after script execution
     [Parameter(ParameterSetName = 'SendReport')]
     [switch]$SendReport,
 
-    # Path to export suspension reports
+    # Directory in which the report is saved before it is sent as a mail
     [Parameter(ParameterSetName = 'SendReport', Mandatory)]
     [ValidateScript({Test-Path -Path $_ -PathType Container})]
     [string]$ReportPath,
 
-    # List or report recipients
+    # List of recipients who will receive the report
     [Parameter(ParameterSetName = 'SendReport', Mandatory)]
     [array]$ReportRecipients,
 
-    # Sender mail address
+    # The sender's address
     [Parameter(ParameterSetName = 'SendReport', Mandatory)]
     [string]$ReportSender,
 
-    # Mail subject
+    # Subject of the mail
     [Parameter(ParameterSetName = 'SendReport')]
     [string]$ReportSubject = 'Database Suspension Report',
 
-    # Mail server to send the mail
+    # SMTP server that is used to send the mail
     [Parameter(ParameterSetName = 'SendReport', Mandatory)]
     [string]$SmtpServer,
 
-    # Listing smtp port
+    # Port over which the SMTP server accepts the mail
     [Parameter(ParameterSetName = 'SendReport')]
     [int]$SmtpPort = 25,
 
-    # Basic sender credentials
+    # Credentials of the sender. Not tested yet!
     [Parameter(ParameterSetName = 'SendReport')]
     [int]$SmtpCredential
 )
