@@ -1,8 +1,11 @@
 ﻿[CmdletBinding(DefaultParametersetName='None')]
 param (
-    # Treshold in % for the total free space
+    # Treshold in percent for the total free space
     [Parameter(Mandatory)]
     [int]$Treshold,
+
+    # List of databases to exclude from management
+    [array]$ExcludedDatabases,
 
     # Send a report by mail
     [Parameter(ParameterSetName = 'SendReport')]
@@ -15,11 +18,15 @@ param (
 
     # List or report recipients
     [Parameter(ParameterSetName = 'SendReport', Mandatory)]
-    [array]$MailRecipients,
+    [array]$ReportRecipients,
 
     # Sender mail address
     [Parameter(ParameterSetName = 'SendReport', Mandatory)]
-    [string]$MailSender,
+    [string]$ReportSender,
+
+    # Mail subject
+    [Parameter(ParameterSetName = 'SendReport')]
+    [string]$ReportSubject = 'Database Suspension Report',
 
     # Mail server to send the mail
     [Parameter(ParameterSetName = 'SendReport', Mandatory)]
@@ -29,16 +36,9 @@ param (
     [Parameter(ParameterSetName = 'SendReport')]
     [int]$SmtpPort = 25,
 
-    # Mail subject
-    [Parameter(ParameterSetName = 'SendReport')]
-    [string]$MailSubject = 'Database Suspension Report',
-
     # Basic sender credentials
     [Parameter(ParameterSetName = 'SendReport')]
-    [int]$SenderCredential,
-
-    # List of databases to exclude from management
-    [array]$ExcludedDatabases
+    [int]$SmtpCredential
 )
 
 function Convert-Size {
@@ -122,17 +122,17 @@ $Export = @{
 
 if ($PSCmdlet.ParameterSetName -eq 'SendReport') {
     $MailSettings = @{
-        To         = $MailRecipients
-        From       = $MailSender
-        Subject    = $MailSubject
+        To         = $ReportRecipients
+        From       = $ReportSender
+        Subject    = $ReportSubject
         Body       = 'Find the database suspension report attached.'
         SmtpServer = $SmtpServer
         Port       = $SmtpPort
     }
 
-    if ($SenderCredential) {
+    if ($SmtpCredential) {
         # Add sender credentials
-        $MailSettings.Add('Credential', $SenderCredential)
+        $MailSettings.Add('Credential', $SmtpCredential)
     }
 }
 
