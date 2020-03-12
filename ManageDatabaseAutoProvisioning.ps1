@@ -144,7 +144,7 @@ Write-Verbose -Message 'Search databases...'
 try {
     # Search all databases
     $Databases = Get-MailboxDatabase -Status -ErrorAction 'Stop' |
-    Select-Object -Property $DatabaseProperties
+        Select-Object -Property $DatabaseProperties
 }
 catch {
     Write-Error -Message "Failed to search databases. $PSItem"
@@ -200,11 +200,14 @@ $DBSpace = foreach ($DB in $Databases) {
         }
     }
 
-    # Save the white space to recude future command length
-    $WhiteSpace = $DB.AvailableNewMailboxSpace.ToBytes()
-
+    # --------------------------------------------------------------------------------
     # Disk values present
+    # --------------------------------------------------------------------------------
     if ($null -ne $Disk) {
+        
+        # Save the white space to recude future command length
+        $WhiteSpace = $DB.AvailableNewMailboxSpace.ToBytes()
+    
         # Create an object with available space details
         New-Object -TypeName PSObject -Property @{
             Database      = $DB.Name
@@ -234,7 +237,9 @@ foreach ($DB in $DBSpace) {
 
     Write-Verbose "Current database: $($DB.Database)"
 
-    # Suspended but enough available space present
+    # --------------------------------------------------------------------------------
+    # Resume suspended database with enough available space
+    # --------------------------------------------------------------------------------
     if ($DB.Suspended -eq $true -and $DB.TotalSpacePct -gt $Treshold) {
         try {
             # Set value to false
@@ -251,7 +256,9 @@ foreach ($DB in $DBSpace) {
         }
     }
 
-    # Not suspended but to less available total space
+    # --------------------------------------------------------------------------------
+    # Suspend database with less available space
+    # --------------------------------------------------------------------------------
     if ($DB.Suspended -eq $false -and $DB.TotalSpacePct -le $Treshold) {
         try {
             # Set value to true
