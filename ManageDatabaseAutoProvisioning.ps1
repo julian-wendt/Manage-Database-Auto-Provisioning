@@ -2,7 +2,7 @@
 param (
     # Treshold in % for the total free space
     [Parameter(Mandatory)]
-    [int]$SpaceTreshold,
+    [int]$Treshold,
 
     # Send a report by mail
     [Parameter(ParameterSetName = 'SendReport')]
@@ -235,7 +235,7 @@ foreach ($DB in $DBSpace) {
     Write-Verbose "Current database: $($DB.Database)"
 
     # Suspended but enough available space present
-    if ($DB.Suspended -eq $true -and $DB.TotalSpacePct -gt $SpaceTreshold) {
+    if ($DB.Suspended -eq $true -and $DB.TotalSpacePct -gt $Treshold) {
         try {
             # Set value to false
             ($DBSpace | Where-Object { $_.Database -eq $DB.Database }).Suspended = $false
@@ -252,7 +252,7 @@ foreach ($DB in $DBSpace) {
     }
 
     # Not suspended but to less available total space
-    if ($DB.Suspended -eq $false -and $DB.TotalSpacePct -le $SpaceTreshold) {
+    if ($DB.Suspended -eq $false -and $DB.TotalSpacePct -le $Treshold) {
         try {
             # Set value to true
             ($DBSpace | Where-Object { $_.Database -eq $DB.Database }).Suspended = $true
