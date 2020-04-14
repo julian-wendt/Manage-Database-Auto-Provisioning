@@ -26,7 +26,7 @@ param (
     
     # Send a report by mail after script execution
     [Parameter(ParameterSetName = 'SendReport')]
-    [switch]$SendReport,
+    [bool]$SendReport = $false,
 
     # Directory in which the report is saved before it is sent as a mail
     [Parameter(ParameterSetName = 'SendReport', Mandatory)]
@@ -123,7 +123,7 @@ $OrderedResults = (
 
 $Resume = @{
     IsExcludedFromProvisioning       = $false
-    IsExcludedFromProvisioningReason = $null
+    IsExcludedFromProvisioningReason = "          "
 }
 
 $Suspend = @{
@@ -137,7 +137,7 @@ $Export = @{
     NoTypeInformation = $true
 }
 
-if ($PSCmdlet.ParameterSetName -eq 'SendReport') {
+if ($SendReport -eq $true) {
     $MailSettings = @{
         To         = $ReportRecipients
         From       = $ReportSender
@@ -296,7 +296,7 @@ foreach ($DB in $DBSpace) {
 # ------------------------------------------------------------------------------------
 # Export report to disk
 # ------------------------------------------------------------------------------------
-if ($PSCmdlet.ParameterSetName -eq 'SendReport') {
+if ($SendReport -eq $true) {
 
     Write-Verbose -Message 'Export report to disk...'
     
@@ -317,7 +317,7 @@ if ($PSCmdlet.ParameterSetName -eq 'SendReport') {
 # ------------------------------------------------------------------------------------
 # Send report by mail
 # ------------------------------------------------------------------------------------
-if ($PSCmdlet.ParameterSetName -eq 'SendReport') {
+if ($SendReport -eq $true) {
 
     Write-Verbose -Message 'Send report by mail...'
 
